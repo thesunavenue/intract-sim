@@ -1,0 +1,46 @@
+function simulateClick(element) {
+  const event = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+  });
+  element.dispatchEvent(event);
+}
+
+function delay(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+async function processTasks() {
+  // Lấy tất cả các phần tử chứa nút "verify"
+  const tasks = document.querySelectorAll('button[data-verify-button-status="idle"][data-verify-button-disabled="false"]');
+  
+  for (const task of tasks) {
+    // Kiểm tra nếu nhiệm vụ đã hoàn thành
+    const completedText = task.closest('div').querySelector('div.completed-text');
+    if (completedText && completedText.textContent.includes('Completed')) {
+      // Bỏ qua tác vụ đã hoàn thành
+      console.log('Skipping completed task');
+      continue;
+    }
+
+    // Mô phỏng click vào nút "verify"
+    simulateClick(task);
+    console.log('Clicked verify button');
+    
+    // Đợi 1 giây trước khi xử lý nhiệm vụ tiếp theo
+    await delay(1000);
+
+    // Nếu có phần tử khác cần xử lý, cũng click vào đó
+    const additionalAction = task.closest('div').querySelector('div.additional-action');
+    if (additionalAction) {
+      simulateClick(additionalAction);
+      console.log('Clicked additional action');
+    }
+  }
+
+  console.log('All tasks processed.');
+}
+
+// Gọi hàm xử lý nhiệm vụ
+processTasks();
